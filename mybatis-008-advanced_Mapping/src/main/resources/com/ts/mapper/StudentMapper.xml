@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ts.mapper.StudentMapper">
+
+<!--
+需要使用resultMap进行对象高级映射
+property 对应JavaBean中的属性名
+                  涉及到其他类中的属性时,使用 对象名.属性名
+                  例如 clazz.cid 这里的属性名是写在 Javabean中的
+-->
+<resultMap id="student_adv" type="Student">
+<!--主键-->
+    <id property="sid" column="sid"/>
+<!--非主键-->
+    <result property="sname" column="sname"/>
+    <result property="clazz.cid" column="cid"/>
+    <result property="clazz.cname" column="cname"/>
+</resultMap>
+
+    <!--
+    //    根据学生的学号查找学生信息,包括班级信息
+       public Student  selectByStudentId(Integer id);
+        private Integer sid;
+        private String sname;
+        private Clazz clazz;
+    -->
+    <select id="selectByStudentId" resultMap="student_adv" parameterType="int">
+        select sid ,sname,s.cid,c.cname
+        from t_stu s left join t_clazz c
+                    on s.cid = c.cid
+        where sid = #{sdsds}
+    </select>
+
+
+
+<!--使用association关联映射-->
+<resultMap id="student_adv_association" type="student">
+    <!--主键-->
+    <id property="sid" column="sid"/>
+    <!--非主键-->
+    <result property="sname" column="sname"/>
+
+    <!--
+    property 副表类的对象名 即在主表中的属性名
+    javaType 副表类的类型
+    -->
+    <association property="clazz" javaType="Clazz">
+        <id property="cid" column="cid"/>
+        <result property="cname" column="cname"/>
+    </association>
+</resultMap>
+
+    <select id="selectByStudentIdAssociation" resultMap="student_adv_association" parameterType="int">
+        select sid ,sname,s.cid,c.cname
+        from t_stu s left join t_clazz c
+                               on s.cid = c.cid
+        where sid = #{sdsds}
+    </select>
+
+
+<!--
+使用分步查询step1
+通过学生ID查询学生信息
+-->
+    <!--类的完全限定名, 或者一个类型别名（关于内置的类型别名，可以参考上面的笔记）。-->
+<resultMap id="resultMapStep1" type="Student">
+    <!--主键-->
+    <id property="sid" column="sid"/>
+    <!--非主键-->
+    <result property="sname" column="sname"/>
+    <!--注意这里放的属性名是clazz, 但关联的是数据库中的cid
+    select 里的是第二步将要执行的SQL语句的sqlId
+    ㊟:必须是完整的sqlId
+    快捷复制:找到对应抽象类中的方法, 右击方法名 Ctrl + Shift + Alt + C
+    如果在SQL语句中对cid起别名了,则此处的column 就得是别名
+    -->
+    <association property="clazz" column="cid"
+                 select="com.ts.mapper.ClazzMapper.selectByClazzStep2"
+    /><!--                  fetchType="lazy"-->
+</resultMap>
+
+<select id="selectByStudentStep1" resultMap="resultMapStep1">
+    select sid,sname,cid
+    from t_stu
+    where sid  =#{sid}
+</select>
+
+
+
+
+<!--以下为一对多 -->
+<!--分步查询Step2:根据cid查找班级学生的信息-->
+    <select id="selectStudentStept2" resultType="Student">
+        select sid,sname
+        from t_stu
+        where cid = #{cid}
+    </select>
+
+
+</mapper>

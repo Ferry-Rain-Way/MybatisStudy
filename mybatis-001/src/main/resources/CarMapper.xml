@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--命名空间-->
+<mapper namespace="ghy">
+    <insert id="insertCar" >
+        INSERT INTO `t_car` (`id`, `car_num`, `brand`, `guide_price`, `produce_time`, `car_type`)
+         VALUES (null, '6666', '丰田霸道2', 32.00, '2020-11-11', '燃油车');
+    </insert>
+    
+    <delete id="deleteByID" >
+        delete from t_car where id = #{id}
+    </delete>
+
+    <update id="updateById">
+
+    </update>
+
+    <select id="selectById" resultType="com.nfjh.pojo.Car">
+        select * from t_car where id=#{id}
+    </select>
+</mapper>
+

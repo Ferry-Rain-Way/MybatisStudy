@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ts.mapper.ClazzMapper">
+    <!--
+    没有  private List<Student> stus;时
+    此处的返回类型使用resultType即可-->
+<select id="selectByClazzStep2" resultType="Clazz">
+    select cid,cname
+    from t_clazz
+    where cid = #{cid}
+</select>
+
+<!--
+    [一对多-collection]
+    private Integer cid;
+    private String cname;
+    private List<Student> stus;
+ -->
+    <resultMap id="resultMapCollection" type="clazz">
+        <id property="cid" column="cid"/>
+        <result property="cname" column="cname"/>
+        <collection property="stus" ofType="student">
+            <id property="sid" column="sid"/>
+            <result property="sname" column="sname"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectByCollection" resultMap="resultMapCollection">
+        select c.cid,c.cname ,s.sid,s.sname
+         from t_clazz c left join t_stu s on c.cid = s.cid
+        where c.cid = #{cid}
+    </select>
+
+<!--    //分步查询Step1 查询 通过cid 查找班级信息[cid,cname]-->
+    <resultMap id="resultMapStep1" type="clazz">
+        <id property="cid" column="cid"/>
+        <result property="cname" column="cname"/>
+        <collection property="stus" column="cid" select="com.ts.mapper.StudentMapper.selectStudentStept2"/>
+        <!--注意collection中的column 代表将要向分步查询的第二步中传入的数据-->
+    </resultMap>
+    <select id="selectByStep1" resultMap="resultMapStep1">
+        select cid,cname
+        from t_clazz
+        where cid =#{cid}
+    </select>
+</mapper>

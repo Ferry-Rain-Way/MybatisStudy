@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--
+现在mapper.xml文件在 resources下的与 mapper接口文件同名的包下
+此时并没有在 pom.xml文件中进行build 文件资源的配置
+-->
+<!--sqlMapper.xml文件的编写者，提供者是谁？使用你mybatis框架的java程序员负责提供的。-->
+<!--要想使用这种机制：namespace必须是dao接口的全限定名称。-->
+
+<mapper namespace="com.nfjh.mapper.StudentMapper">
+    <!--    List<Student> selectById (Long id);-->
+    <select id="selectById" resultType="com.nfjh.pojo.Student" parameterType="long">
+        select * from t_student where id = #{id}
+    </select>
+
+    <!--Map 传入参数-->
+<insert id="insertStudentByMap" parameterType="map">
+    insert into t_student
+    values(#{ID},#{姓名},#{年龄},#{身高},#{生日},#{性别});
+</insert>
+
+    <!--List<Student> selectByNameSex(String name,Character Sex);-->
+    <select id="selectByNameSex" resultType="com.nfjh.pojo.Student">
+
+    </select>
+</mapper>
